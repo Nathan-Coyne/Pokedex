@@ -61,10 +61,6 @@ class PokedexTest extends TestCase
     public function test_pokemon_service_get_specific_by_name() {
         $input = 'ditto';
         $pokemon = PokedexService::getSpecificPokemonByName($input);
-        $this->assertCount(1, $pokemon);
-        foreach ($pokemon as $mon) {
-            $this->assertInstanceOf(Pokemon::class, $mon);
-            $this->assertEquals($input, $mon->getName());
-        }
+        $this->assertEquals($input, $pokemon->getName());
     }
 }
