@@ -28,7 +28,7 @@ WORKDIR /var/www/html/pokedex
 COPY ./api /var/www/html/
 
 # Expose the port PHP-FPM is running on
-EXPOSE 9000
+EXPOSE 9002
 
 # Default command to run the application
 CMD ["php-fpm"]

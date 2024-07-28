@@ -5,7 +5,7 @@ services:
       "dockerfile": "Dockerfile"
     }
     ports:
-      - "9000:9000"  # for PHP-FPM
+      - "9002:9002"  # for PHP-FPM
       - "44857:44857"  # for Xdebug
     environment:
       XDEBUG_MODE: debug
@@ -13,9 +13,39 @@ services:
     volumes:
       - ./api:/var/www/html/
     restart: unless-stopped
-    command: php artisan serve --host=0.0.0.0 --port=9000
+    command: >
+      sh -c "composer install &&
+      php artisan serve --host=0.0.0.0 --port=9002"
+    networks:
+        - pokedex-network
+  poke-mysql:
+    image: mysql:5.7
+    container_name: poke-mysql
+    ports:
+      - "3307:3307"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    volumes:
+      - ./mysql-data:/var/lib/mysql
     networks:
       - pokedex-network
+  poke-frontend:
+    container_name: poke-frontend
+    environment:
+      ApiPort: 8082
+    build:
+      context: ./frontend-backup
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"  # Assuming the Vue.js app runs on port 8080
+    volumes:
+      - ./frontend-backup/pokedex:/app
+    networks:
+      - pokedex-network
+    command: sh -c "npm run serve -- --host 0.0.0.0 --port 8082"
 networks:
   pokedex-network:
     driver: bridge
